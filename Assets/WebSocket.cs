@@ -61,7 +61,7 @@ public class Connection : MonoBehaviour
       // await websocket.Send(new byte[] { 10, 20, 30 });
 
       // Sending plain text
-      await websocket.SendText("PUB test.subject 5\r\nHello\r\n");
+      await websocket.SendText("PUB subject.pose 5\r\nHello\r\n");
     }
   }
 
