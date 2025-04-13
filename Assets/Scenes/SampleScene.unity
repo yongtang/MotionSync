@@ -165,6 +165,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eac66342f99334c3880b6335dc5d7d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  livekitUrl: wss://service.zenimotion.com
+  livekitToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDQ2MDgwMDMsImlzcyI6ImRldmtleSIsIm5hbWUiOiJib3QyIiwibmJmIjoxNzQ0NTIxNjAzLCJzdWIiOiJib3QyIiwidmlkZW8iOnsicm9vbSI6InRlc3Rfcm9vbSIsInJvb21Kb2luIjp0cnVlfX0.V_Jhd_PSezlBD27ACqU7xkBuTpE-Rv7_upyPXQ9vikk
+  cylinderRenderer: {fileID: 1228136670}
 --- !u!114 &282141970
 MonoBehaviour:
   m_ObjectHideFlags: 0
