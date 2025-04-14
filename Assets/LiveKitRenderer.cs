@@ -7,9 +7,11 @@ public class LiveKitRenderer : MonoBehaviour
 {
     public static LiveKitRenderer Instance;
 
-    private Coroutine coroutine;
-
     private Room room;
+    private Coroutine roomCoroutine;
+
+    private VideoStream stream;
+    private Coroutine streamCoroutine;
 
     void Awake()
     {
@@ -30,12 +32,54 @@ public class LiveKitRenderer : MonoBehaviour
         
     }
 
+    void OnDestroy()
+    {
+        if (streamCoroutine != null)
+        {
+            StopCoroutine(streamCoroutine);
+        }
+        if (stream != null)
+        {
+            stream.Stop();
+            stream.Dispose();
+        }
+        if (roomCoroutine != null)
+        {
+            StopCoroutine(roomCoroutine);
+        }
+        if (room != null)
+        {
+            room.Disconnect();
+        }
+    }
+
     void TrackSubscribed(IRemoteTrack track, RemoteTrackPublication publication, RemoteParticipant participant)
     {
         Debug.Log("TrackSubscribed: " + track?.Sid + "|" + participant.Identity + "|" + participant.Name);
         if ((participant.Identity == "bot") && (track is RemoteVideoTrack videoTrack))
         {
             Debug.Log("Subscribed to video track: " + videoTrack.Sid);
+
+            // Clean up old stream
+            if (stream != null)
+            {
+                StopCoroutine(streamCoroutine);
+                stream.Dispose();
+            }
+            // Start new stream
+            stream = new VideoStream(videoTrack);
+            stream.TextureReceived += tex =>
+            {
+                Debug.Log("Frame received — applying to cylinder");
+                Renderer renderer = transform.Find("Cylinder")?.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.mainTexture = tex;
+                    renderer.material.mainTextureScale = new Vector2(-1, 1); // Flip horizontally
+                }
+            };
+            stream.Start();
+            streamCoroutine = StartCoroutine(stream.Update());
         }
     }
 
@@ -62,10 +106,10 @@ public class LiveKitRenderer : MonoBehaviour
         {
             return;
         }
-        if (coroutine != null)
+        if (roomCoroutine != null)
         {
-            StopCoroutine(coroutine);
+            StopCoroutine(roomCoroutine);
         }
-        coroutine = StartCoroutine(ConnectToRoom(serve, token));
+        roomCoroutine = StartCoroutine(ConnectToRoom(serve, token));
     }
 }
