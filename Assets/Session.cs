@@ -22,6 +22,22 @@ public class Session : MonoBehaviour
         public string token_address;
     }
 
+    [System.Serializable]
+    public class PairRequest
+    {
+        public string grant_type;
+        public string pair_code;
+        public string identity;
+    }
+
+    [System.Serializable]
+    public class TokenResponse
+    {
+        public string access_token;
+        public string refresh_token;
+        public string socket_address;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,6 +60,42 @@ public class Session : MonoBehaviour
 
             text.text = $"Go to\n{info.pair_address}\n{info.pair_code}";
             canvas.SetActive(true);
+
+            while (!authenticated)
+            {
+                // Create request
+                UnityWebRequest request = new UnityWebRequest(info.token_address, "POST");
+                byte[] body = new System.Text.UTF8Encoding().GetBytes(JsonUtility.ToJson(new PairRequest
+                {
+                    grant_type = "pair_code",
+                    pair_code = info.pair_code,
+                    identity = $"device-{SystemInfo.deviceUniqueIdentifier}"
+                }));
+                Debug.Log("Request: " + System.Text.Encoding.UTF8.GetString(body));
+                request.uploadHandler = new UploadHandlerRaw(body);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("Token received: " + request.downloadHandler.text);
+                    TokenResponse response = JsonUtility.FromJson<TokenResponse>(request.downloadHandler.text);
+
+                    Debug.Log("Token received: " + $"access: {response.access_token}, refresh: {response.refresh_token}, address: {response.socket_address}");
+
+                    authenticated = true;
+                    canvas.SetActive(false);
+                    break;
+                }
+                else
+                {
+                    Debug.Log("Token not ready yet or error: " + request.responseCode);
+                }
+
+                yield return new WaitForSeconds(1f);
+            }
         }
         else
         {
