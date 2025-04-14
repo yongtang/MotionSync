@@ -1,9 +1,13 @@
 using UnityEngine;
+using System.Collections;
 using LiveKit;
+using LiveKit.Proto;
 
 public class LiveKitRenderer : MonoBehaviour
 {
     public static LiveKitRenderer Instance;
+
+    private Coroutine coroutine;
 
     private Room room;
 
@@ -36,8 +40,23 @@ public class LiveKitRenderer : MonoBehaviour
         Debug.Log("TrackUnsubscribed: " + track?.Sid);
     }
 
-    public void Connect()
+    IEnumerator ConnectToRoom(string serve, string token)
     {
-        Debug.Log("Connect Room");
+        Debug.Log("ConnectToRoom");
+        yield return null;
+    }
+
+    public void Connect(string serve, string token)
+    {
+        Debug.Log("Connect: " + room.ConnectionState + "|" + room.IsConnected);
+        if (room.IsConnected)
+        {
+            return;
+        }
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
+        coroutine = StartCoroutine(ConnectToRoom(serve, token));
     }
 }

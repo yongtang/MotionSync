@@ -87,7 +87,7 @@ public class Session : MonoBehaviour
 
                     authenticated = true;
                     canvas.SetActive(false);
-                    LiveKitRenderer.Instance.Connect();
+                    LiveKitRenderer.Instance.Connect(response.socket_address, response.access_token);
                     break;
                 }
                 else
