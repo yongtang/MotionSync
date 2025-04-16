@@ -37,15 +37,18 @@ public class LiveKitRenderer : MonoBehaviour
         if (streamCoroutine != null)
         {
             StopCoroutine(streamCoroutine);
+            streamCoroutine = null;
         }
         if (stream != null)
         {
             stream.Stop();
             stream.Dispose();
+            stream = null;
         }
         if (roomCoroutine != null)
         {
             StopCoroutine(roomCoroutine);
+            roomCoroutine = null;
         }
         if (room != null)
         {
@@ -64,7 +67,9 @@ public class LiveKitRenderer : MonoBehaviour
             if (stream != null)
             {
                 StopCoroutine(streamCoroutine);
+                streamCoroutine = null;
                 stream.Dispose();
+                stream = null;
             }
             // Start new stream
             stream = new VideoStream(videoTrack);
@@ -109,6 +114,7 @@ public class LiveKitRenderer : MonoBehaviour
         if (roomCoroutine != null)
         {
             StopCoroutine(roomCoroutine);
+            roomCoroutine = null;
         }
         roomCoroutine = StartCoroutine(ConnectToRoom(serve, token));
     }
