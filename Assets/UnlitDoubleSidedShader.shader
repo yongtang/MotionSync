@@ -11,6 +11,8 @@ Shader "Unlit/NewUnlitShader"
 
         Pass
         {
+            Cull Off
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
